@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Oscilloscopio didattico · Fase 3 — Verifiche e valutazione</title>
+<title>Oscilloscopio virtuale · Laboratorio libero</title>
 <style>
 :root{font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#e9f2fa;background:#0f1924;color-scheme:dark}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#2b4458,#0f1924 65%)}button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #39bde7;outline-offset:3px}[hidden]{display:none!important}
@@ -15,12 +15,14 @@
 body.student-mode #sources,body.student-mode #teacherTools,body.student-mode #resultsWrap,body.student-mode #teacherReset,body.student-mode #newExercise,body.student-mode #checkExercise{display:none!important}body.student-mode .modebar{background:#1b372f;border-color:#447661}body.student-mode .lessons{border-color:#477861}
 @media(max-width:1050px){.layout{grid-template-columns:1fr}.stack{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:740px){.wrap{padding:10px}.instrument{padding:9px}.screenframe{border-width:7px;padding:8px}.stack{grid-template-columns:1fr}.source-grid{grid-template-columns:1fr}.readings{grid-template-columns:repeat(2,minmax(0,1fr))}.exercise{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.rows,.exercise{grid-template-columns:1fr}.btn{padding:9px 11px}}
 .exam-config,.rubric{margin-top:17px;padding:17px;border-radius:14px;border:1px solid #47647a;background:#193242}.exam-config h2,.rubric h2{font-size:18px;margin:0 0 12px}.exam-config p,.rubric p{color:#bfd5df;font-size:12px;line-height:1.65;margin:12px 0 0}.exam-config-grid,.student-identity{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.exam-config-grid .field label,.student-identity .field label{display:block;color:#daedf5;font-size:12px;font-weight:750;margin-bottom:6px}.exam-config-grid input,.exam-config-grid select,.student-identity input{width:100%;padding:10px;border:1px solid #5c7b8c;border-radius:8px;background:#253f50;color:#fff;color-scheme:dark}.rubric-heading{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}.rubric-heading span{font-size:12px;color:#a9dced}.rubric-table-wrap{overflow-x:auto}.rubric table,.assessment-table{width:100%;border-collapse:collapse;font-size:12px}.rubric th,.rubric td,.assessment-table th,.assessment-table td{padding:9px 8px;border-bottom:1px solid #416072;text-align:left}.rubric th,.assessment-table th{color:#acd7e9;background:#203f51}.rubric .subtotal td{font-weight:700;background:#244452}.rubric .grand-total td{font-weight:800;background:#235a50}.student-identity{margin:12px 0 14px;grid-template-columns:repeat(3,minmax(0,1fr))}.exam-clock{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:8px 0 15px;border:1px solid #52758a;background:#24475b;padding:10px 12px;border-radius:10px;font-size:13px}.exam-clock strong{font-size:25px;font-variant-numeric:tabular-nums;color:#f7d39c}.exam-clock span:last-child{margin-left:auto;font-size:12px}.assessment-table{margin:9px 0 14px}.assessment-table .partial{color:#ffe09b}.assessment-table .ok{color:#a7f8c8}.assessment-table .bad{color:#ffbaba}.score-banner{padding:13px;border-radius:10px;background:#224d4c;border:1px solid #4e9580;margin:12px 0}.score-banner strong{font-size:22px;color:#fff}.print-sheet{display:none}body.student-mode #examConfig{display:none!important}body.student-mode .rubric{border-color:#50816e}@media(max-width:740px){.exam-config-grid,.student-identity{grid-template-columns:1fr}}@media print{body{background:#fff!important;color:#111!important}body>.wrap,body>.modal-backdrop{display:none!important}.print-sheet{display:block!important;color:#111;background:#fff;font:11pt Arial,sans-serif;padding:18px}.print-sheet h1{font-size:18pt}.print-sheet table{width:100%;border-collapse:collapse;font-size:9pt}.print-sheet td,.print-sheet th{border:1px solid #777;padding:5px;text-align:left}.print-sheet .print-meta{margin-bottom:18px}.print-sheet h2{margin-top:18px}}
+/* Modalità laboratorio: si conservano gli elementi tecnici e i riferimenti JS legacy, ma non si espongono valutazioni, report o accessi con PIN. */
+#modeBar,#modeBadge,#export,#resultsWrap,#teacherTools,#examConfig,#rubric,#lessonArea,#pinBackdrop{display:none!important}
 </style>
 </head>
 <body>
 <main class="wrap">
 <header>
-<div><h1>Oscilloscopio virtuale · Laboratorio e verifiche</h1><p>4 canali indipendenti • Fase 3: valutazione e tempi • Modalità Docente/Studente</p></div>
+<div><h1>Oscilloscopio virtuale · Laboratorio interattivo</h1><p>4 canali indipendenti · Regola i generatori, esplora le forme d’onda e impara usando l’oscilloscopio.</p></div>
 <div class="actions">
 <span class="mode-badge" id="modeBadge">🎓 MODALITÀ DOCENTE</span>
 <button class="btn" id="teacherReset" type="button">↺ Ripristina</button>
@@ -51,7 +53,7 @@ body.student-mode #sources,body.student-mode #teacherTools,body.student-mode #re
 </div>
 <div class="status"><span class="led" id="led"></span><b id="runstate">ACQUISIZIONE ATTIVA</b><span id="timeStatus"></span><span>• Trigger sul fronte di salita</span></div>
 </section>
-<section id="sources" class="source-grid" aria-label="Generatori del docente"></section>
+<section id="sources" class="source-grid" aria-label="Generatori di segnali"></section>
 <div class="teacher-tools" id="teacherTools"><p><b>Preparazione della prova:</b> configura tutti e 4 i generatori, quindi imposta tempi e criteri di valutazione. Un PIN scelto da te servirà per tornare alla modalità docente.</p><button class="btn" id="newExercise" type="button">🎲 Segnale casuale sul canale selezionato</button></div>
 <section class="exam-config" id="examConfig" aria-label="Impostazioni verifica docente">
 <h2>📋 Impostazioni della verifica · 4 onde obbligatorie</h2>
@@ -616,7 +618,7 @@ $('modeSwitch').addEventListener('click',()=>openPin(role==='teacher'?'start':'u
 $('pinCancel').addEventListener('click',closePin);$('pinConfirm').addEventListener('click',confirmPin);
 $('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')confirmPin();if(e.key==='Escape')closePin()});
 $('pinBackdrop').addEventListener('click',e=>{if(e.target===$('pinBackdrop'))closePin()});
-refreshMode();updatePause();validateInputs();updateRubric();setInterval(updateClock,1000);updateClock();
+refreshMode();$('modeBadge').textContent='🔬 LABORATORIO LIBERO';$('channelsHint').textContent='Attiva o nascondi i canali e regola liberamente le tracce.';updatePause();validateInputs();updateRubric();saveState();
 })();
 </script>
 </body>
