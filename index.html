@@ -593,6 +593,8 @@ function newRandomExercise(){if(role!=='teacher')return;const n=Number($('exerci
  $('time').value=timeIndex<0?times.length-1:timeIndex;resultsVisible=false;$('results').hidden=true;$('showResults').textContent='👁 Vedi risultati';for(const id of answerIds)$(id).value='';$('feedback').textContent='Nuovo segnale casuale sul canale CH '+roman[n-1]+'.';validateInputs();refreshChannelChoices();saveState()}
 function resetAll(){if(role!=='teacher')return;for(let n=1;n<=4;n++){const d=initial[n-1];for(const [p,value] of Object.entries({type:'ON',wave:d.w,freq:d.f,amp:d.a,offset:d.o,phase:0,v:d.v,p:d.p,visible:true})){let el=$(p+n);if(el.type==='checkbox')el.checked=value;else el.value=value}}for(const [id,value] of Object.entries({time:7,hpos:0,trigger:0,triggerSource:'1',coupling:'DC',brightness:75}))$(id).value=value;running=true;frozenSignals=null;resultsVisible=false;$('results').hidden=true;$('showResults').textContent='👁 Vedi risultati';$('showResults').setAttribute('aria-expanded','false');for(const id of answerIds)$(id).value='';$('feedback').textContent='';updatePause();refreshChannelChoices();validateInputs();saveState()}
 restoreState();
+// Modalità laboratorio: ignora vecchi blocchi studente salvati in precedenza.
+role='teacher'; submitted=false; examChannels=[]; pinDigest=''; salt='';
 for(let n=1;n<=4;n++){
  for(const [action,delta] of [['minus',-1],['plus',1]])$(action+n).addEventListener('click',()=>{const field=$('v'+n);field.value=clamp((Number(field.value)||1)+delta,1,500);validateInputs();saveState()});
  $('v'+n).addEventListener('change',()=>{if(!$('v'+n).value)$('v'+n).value=1;validateInputs();saveState()});
